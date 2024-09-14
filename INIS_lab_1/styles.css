@@ -1,10 +1,11 @@
 body {
+    background-color: #1e1e1e;
     font-family: Arial, sans-serif;
     padding: 20px;
 }
 
 h1 {
-    color: black;
+    color: #FFFFFF;
     text-align: center;
     margin-bottom: 30px;
 }
@@ -17,6 +18,7 @@ h1 {
 }
 
 .product-card {
+    background-color: #fefefe;
     color: black;
     border: 5px solid #1f2f57;
     border-radius: 25px;
