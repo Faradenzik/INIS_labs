@@ -1,31 +1,21 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>T-Shirts Shop</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
+    <title>T-Shirt Catalog</title>
 </head>
 <body>
     <h1>Our T-Shirts</h1>
-    <div id="product-list" class="product-list"></div>
+    <div id="shirt-container" class="shirt-container"></div>
 
-    <div id="product-modal" class="modal">
+    <div id="modal" class="modal">
         <div class="modal-content">
-            <button class="close">&times;</button>
-            <div id="modal-body">
-                <div class="image-slider">
-                    <button class="prev">&#10094;</button>
-                    <img id="modal-image" src="" alt="Product Image" />
-                    <button class="next">&#10095;</button>
-                </div>
-                <select id="color-select" class="color-select"></select>
-                <h2 id="modal-title"></h2>
-                <p id="modal-price"></p>
-                <p id="modal-description"></p>
-            </div>
+            <span id="close-modal" class="close">&times;</span>
+            <img id="modal-img" src="" alt="Shirt Preview">
         </div>
-    </div>    
+    </div>
 
     <script src="shirts.js"></script>
     <script src="main.js"></script>

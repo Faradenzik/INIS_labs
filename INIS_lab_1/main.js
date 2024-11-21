@@ -1,109 +1,85 @@
-const productList = document.getElementById('product-list');
+const container = document.getElementById('shirt-container');
+const modal = document.getElementById('modal');
+const modalContent = document.querySelector('.modal-content');
 
-function createProductCard(shirt) {
-    const productCard = document.createElement('div');
-    productCard.className = 'product-card';
+shirts.forEach((shirt) => {
+    const shirtCard = document.createElement('div');
+    shirtCard.classList.add('shirt-card');
 
-    const productImage = document.createElement('img');
-    
-    if (Object.keys(shirt.colors).length > 0) {
-        const firstColorKey = Object.keys(shirt.colors)[0]; 
-        productImage.src = shirt.colors[firstColorKey].front;
+    const firstColorKey = Object.keys(shirt.colors)[0];
+    let previewImage;
+
+    if (shirt.colors[firstColorKey]?.front || shirt.colors[firstColorKey]?.back) {
+        previewImage = shirt.colors[firstColorKey].front || shirt.colors[firstColorKey].back;
     } else {
-        productImage.src = shirt.default.front;
+        previewImage = shirt.default.front || shirt.default.back;
     }
-    
-    if (shirt.name == null) {
-        shirt.name = 'No title';
-    }
-    productImage.alt = shirt.name;
-    productCard.appendChild(productImage);
 
-    const productName = document.createElement('h3');
-    productName.textContent = shirt.name;
-    productCard.appendChild(productName);
+    shirtCard.innerHTML = `
+        <img src="${previewImage}" alt="${shirt.name}">
+        <h3>${shirt.name}</h3>
+        <p>Available in ${Object.keys(shirt.colors).length} colors</p>
+        <button class="quick-view">Quick View</button>
+        <button>See Page</button>
+    `;
 
-    const productColors = document.createElement('p');
-    const availableColors = Object.keys(shirt.colors).length;
-    if (availableColors > 0) {
-        productColors.textContent = `Available in ${availableColors} colors`;
-    } else {
-        productColors.textContent = `Not available`;
-    }
-    productCard.appendChild(productColors);
-
-    const quickViewBtn = document.createElement('button');
-    quickViewBtn.textContent = 'Quick View';
-    quickViewBtn.onclick = () => openModal(shirt);
-    productCard.appendChild(quickViewBtn);
-
-    const seePageBtn = document.createElement('button');
-    seePageBtn.textContent = 'See Page';
-    productCard.appendChild(seePageBtn);
-
-    productList.appendChild(productCard);
-}
-
-
-let currentImageIndex = 0;
-function openModal(shirt) {
-    const modal = document.getElementById('product-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalPrice = document.getElementById('modal-price');
-    const modalDescription = document.getElementById('modal-description');
-    const modalImage = document.getElementById('modal-image');
-    const colorSelect = document.getElementById('color-select');
-
-    modalTitle.textContent = shirt.name;
-    modalPrice.textContent = `Price: ${shirt.price}`;
-    modalDescription.textContent = shirt.description;
-
-    colorSelect.innerHTML = '';
-    const colors = Object.keys(shirt.colors);
-
-    colors.forEach((color) => {
-        const option = document.createElement('option');
-        option.value = color;
-        option.textContent = color;
-        colorSelect.appendChild(option);
+    const quickViewButton = shirtCard.querySelector('.quick-view');
+    quickViewButton.addEventListener('click', () => {
+        openModal(shirt, firstColorKey);
     });
 
-    function updateImage() {
-        const selectedColor = colorSelect.value;
-        const colorImages = shirt.colors[selectedColor];
-        const imagesArray = [colorImages.front, colorImages.back];
-        modalImage.src = imagesArray[currentImageIndex];
+    container.appendChild(shirtCard);
+});
+
+function openModal(shirt, color) {
+    modalContent.innerHTML = `
+        <span id="close-modal" class="close">&times;</span>
+    `;
+
+    if (shirt.colors[color]?.front || shirt.colors[color]?.back) {
+        const { front, back } = shirt.colors[color];
+        if (front) {
+            const frontImg = document.createElement('img');
+            frontImg.src = front;
+            frontImg.alt = `${shirt.name} (${color}) - Front`;
+            frontImg.style.margin = '10px';
+            modalContent.appendChild(frontImg);
+        }
+        if (back) {
+            const backImg = document.createElement('img');
+            backImg.src = back;
+            backImg.alt = `${shirt.name} (${color}) - Back`;
+            backImg.style.margin = '10px';
+            modalContent.appendChild(backImg);
+        }
+    } else {
+        const { front, back } = shirt.default;
+        if (front) {
+            const frontImg = document.createElement('img');
+            frontImg.src = front;
+            frontImg.alt = `${shirt.name} (default) - Front`;
+            frontImg.style.margin = '10px';
+            modalContent.appendChild(frontImg);
+        }
+        if (back) {
+            const backImg = document.createElement('img');
+            backImg.src = back;
+            backImg.alt = `${shirt.name} (default) - Back`;
+            backImg.style.margin = '10px';
+            modalContent.appendChild(backImg);
+        }
     }
 
-    updateImage();
+    modal.style.display = 'flex';
 
-    document.querySelector('.prev').onclick = function() {
-        currentImageIndex = (currentImageIndex === 0) ? 1 : 0;
-        updateImage();
-    };
-
-    document.querySelector('.next').onclick = function() {
-        currentImageIndex = (currentImageIndex === 0) ? 1 : 0;
-        updateImage();
-    };
-
-    colorSelect.onchange = function() {
-        currentImageIndex = 0;
-        updateImage();
-    };
-
-    modal.style.display = 'block';
-
-    const closeModal = document.getElementsByClassName('close')[0];
-    closeModal.onclick = function() {
+    const closeModal = document.getElementById('close-modal');
+    closeModal.addEventListener('click', () => {
         modal.style.display = 'none';
-    };
-
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    };
+    });
 }
 
-shirts.forEach(createProductCard);
+window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
