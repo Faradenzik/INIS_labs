@@ -28,6 +28,12 @@ shirts.forEach((shirt) => {
         openModal(shirt, firstColorKey);
     });
 
+    const seePageButton = shirtCard.querySelector('.see-page');
+    seePageButton.addEventListener('click', () => {
+        localStorage.setItem('selectedShirt', JSON.stringify(shirt));
+        window.location.href = 'details.html';
+    });
+
     container.appendChild(shirtCard);
 });
 
