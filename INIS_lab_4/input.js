@@ -83,14 +83,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && draggedElement) {
-      resetDrag();
-    }
-  });
-
   document.addEventListener("touchstart", (event) => {
-    if (event.touches.length > 1 && draggedElement) {
+    // Снять выделение только при касании выделенного объекта
+    if (draggedElement && event.target === draggedElement) {
       resetDrag();
     }
   });
