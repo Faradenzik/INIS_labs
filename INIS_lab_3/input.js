@@ -1,4 +1,3 @@
-document.addEventListener("DOMContentLoaded", () => {
     const targets = document.querySelectorAll(".target");
     let draggedElement = null;
     let initialPosition = null;
@@ -65,10 +64,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (event.key === "Escape" && draggedElement) {
         draggedElement.style.top = `${initialPosition.top}px`;
         draggedElement.style.left = `${initialPosition.left}px`;
-        draggedElement.style.backgroundColor = "red"; // Возвращаем цвет
+        draggedElement.style.backgroundColor = "red";
         draggedElement = null;
         isSticky = false;
       }
     });
-  });
   
