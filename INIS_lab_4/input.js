@@ -1,4 +1,3 @@
-document.addEventListener("DOMContentLoaded", () => {
   const targets = document.querySelectorAll(".target");
   let draggedElement = null;
   let initialPosition = null;
@@ -38,18 +37,14 @@ document.addEventListener("DOMContentLoaded", () => {
         document.addEventListener(touch ? "touchend" : "mouseup", endHandler, {
           once: true,
         });
-      } else {
-        isSticky = false;
-        draggedElement.style.backgroundColor = "red";
-        draggedElement = null;
       }
     };
 
     const startStickyDrag = (event, touch = false) => {
-      if (!isSticky) {
-        const pointerX = touch ? event.touches[0].clientX : event.clientX;
-        const pointerY = touch ? event.touches[0].clientY : event.clientY;
+      const pointerX = touch ? event.touches[0].clientX : event.clientX;
+      const pointerY = touch ? event.touches[0].clientY : event.clientY;
 
+      if (!isSticky) {
         isSticky = true;
         draggedElement = target;
         initialPosition = { top: target.offsetTop, left: target.offsetLeft };
@@ -57,19 +52,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         offsetX = pointerX - target.offsetLeft;
         offsetY = pointerY - target.offsetTop;
-
-        const moveHandler = (moveEvent) => {
-          const moveX = touch ? moveEvent.touches[0].clientX : moveEvent.clientX;
-          const moveY = touch ? moveEvent.touches[0].clientY : moveEvent.clientY;
-
-          if (isSticky && draggedElement) {
-            draggedElement.style.top = `${moveY - offsetY}px`;
-            draggedElement.style.left = `${moveX - offsetX}px`;
-          }
-        };
-
-        document.addEventListener(touch ? "touchmove" : "mousemove", moveHandler);
       }
+
+      const moveHandler = (moveEvent) => {
+        const moveX = touch ? moveEvent.touches[0].clientX : moveEvent.clientX;
+        const moveY = touch ? moveEvent.touches[0].clientY : moveEvent.clientY;
+
+        if (isSticky && draggedElement) {
+          draggedElement.style.top = `${moveY - offsetY}px`;
+          draggedElement.style.left = `${moveX - offsetX}px`;
+        }
+      };
+
+      document.addEventListener(touch ? "touchmove" : "mousemove", moveHandler);
     };
 
     target.addEventListener("mousedown", (event) => startDrag(event));
@@ -83,9 +78,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && draggedElement) {
+      draggedElement.style.top = `${initialPosition.top}px`;
+      draggedElement.style.left = `${initialPosition.left}px`;
+      draggedElement.style.backgroundColor = "red";
+      draggedElement = null;
+      isSticky = false;
+    }
+  });
+
   document.addEventListener("touchstart", (event) => {
-    // Снять выделение только при касании выделенного объекта
-    if (draggedElement && event.target === draggedElement) {
+    if (event.touches.length > 1 && draggedElement) {
       resetDrag();
     }
   });
@@ -99,4 +103,3 @@ document.addEventListener("DOMContentLoaded", () => {
       isSticky = false;
     }
   };
-});

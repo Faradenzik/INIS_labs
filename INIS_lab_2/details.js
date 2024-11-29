@@ -1,4 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
     const shirtData = JSON.parse(localStorage.getItem('selectedShirt'));
 
     if (!shirtData) {
@@ -93,4 +92,3 @@ document.addEventListener('DOMContentLoaded', () => {
         backButton.classList.add('active');
         frontButton.classList.remove('active');
     });
-});
