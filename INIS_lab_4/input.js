@@ -1,105 +1,105 @@
-  const targets = document.querySelectorAll(".target");
-  let draggedElement = null;
-  let initialPosition = null;
-  let isSticky = false;
-  let offsetX = 0;
-  let offsetY = 0;
+const targets = document.querySelectorAll(".target");
+let draggedElement = null;
+let initialPosition = null;
+let isSticky = false;
+let offsetX = 0;
+let offsetY = 0;
 
-  targets.forEach((target) => {
-    const startDrag = (event, touch = false) => {
-      const pointerX = touch ? event.touches[0].clientX : event.clientX;
-      const pointerY = touch ? event.touches[0].clientY : event.clientY;
+targets.forEach((target) => {
+  target.addEventListener("mousedown", (event) => {
+    if (!isSticky) {
+      draggedElement = target;
+      initialPosition = { top: target.offsetTop, left: target.offsetLeft };
 
-      if (!isSticky) {
-        draggedElement = target;
-        initialPosition = { top: target.offsetTop, left: target.offsetLeft };
+      offsetX = event.clientX - target.offsetLeft;
+      offsetY = event.clientY - target.offsetTop;
 
-        offsetX = pointerX - target.offsetLeft;
-        offsetY = pointerY - target.offsetTop;
-
-        const moveHandler = (moveEvent) => {
-          const moveX = touch ? moveEvent.touches[0].clientX : moveEvent.clientX;
-          const moveY = touch ? moveEvent.touches[0].clientY : moveEvent.clientY;
-
-          if (draggedElement) {
-            draggedElement.style.top = `${moveY - offsetY}px`;
-            draggedElement.style.left = `${moveX - offsetX}px`;
-          }
-        };
-
-        const endHandler = () => {
-          draggedElement = null;
-          document.removeEventListener(touch ? "touchmove" : "mousemove", moveHandler);
-          document.removeEventListener(touch ? "touchend" : "mouseup", endHandler);
-        };
-
-        document.addEventListener(touch ? "touchmove" : "mousemove", moveHandler);
-        document.addEventListener(touch ? "touchend" : "mouseup", endHandler, {
-          once: true,
-        });
-      }
-    };
-
-    const startStickyDrag = (event, touch = false) => {
-      const pointerX = touch ? event.touches[0].clientX : event.clientX;
-      const pointerY = touch ? event.touches[0].clientY : event.clientY;
-
-      if (!isSticky) {
-        isSticky = true;
-        draggedElement = target;
-        initialPosition = { top: target.offsetTop, left: target.offsetLeft };
-        target.style.backgroundColor = "blue";
-
-        offsetX = pointerX - target.offsetLeft;
-        offsetY = pointerY - target.offsetTop;
-      }
-
-      const moveHandler = (moveEvent) => {
-        const moveX = touch ? moveEvent.touches[0].clientX : moveEvent.clientX;
-        const moveY = touch ? moveEvent.touches[0].clientY : moveEvent.clientY;
-
-        if (isSticky && draggedElement) {
-          draggedElement.style.top = `${moveY - offsetY}px`;
-          draggedElement.style.left = `${moveX - offsetX}px`;
+      const mouseMoveHandler = (moveEvent) => {
+        if (draggedElement) {
+          draggedElement.style.top = `${moveEvent.clientY - offsetY}px`;
+          draggedElement.style.left = `${moveEvent.clientX - offsetX}px`;
         }
       };
 
-      document.addEventListener(touch ? "touchmove" : "mousemove", moveHandler);
-    };
+      document.addEventListener("mousemove", mouseMoveHandler);
 
-    target.addEventListener("mousedown", (event) => startDrag(event));
-    target.addEventListener("touchstart", (event) => startDrag(event, true));
-
-    target.addEventListener("dblclick", (event) => startStickyDrag(event));
-    target.addEventListener("touchstart", (event) => {
-      if (event.detail === 2) {
-        startStickyDrag(event, true);
-      }
-    });
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && draggedElement) {
-      draggedElement.style.top = `${initialPosition.top}px`;
-      draggedElement.style.left = `${initialPosition.left}px`;
+      document.addEventListener(
+        "mouseup",
+        () => {
+          draggedElement = null;
+          document.removeEventListener("mousemove", mouseMoveHandler);
+        },
+        { once: true }
+      );
+    } else {
+      isSticky = false;
       draggedElement.style.backgroundColor = "red";
       draggedElement = null;
+    }
+  });
+
+  target.addEventListener("touchstart", (event) => {
+    if (!isSticky) {
+      draggedElement = target;
+      initialPosition = { top: target.offsetTop, left: target.offsetLeft };
+
+      const touch = event.touches[0];
+      offsetX = touch.clientX - target.offsetLeft;
+      offsetY = touch.clientY - target.offsetTop;
+
+      const touchMoveHandler = (moveEvent) => {
+        const touch = moveEvent.touches[0];
+        if (draggedElement) {
+          draggedElement.style.top = `${touch.clientY - offsetY}px`;
+          draggedElement.style.left = `${touch.clientX - offsetX}px`;
+        }
+      };
+
+      document.addEventListener("touchmove", touchMoveHandler);
+
+      document.addEventListener(
+        "touchend",
+        () => {
+          draggedElement = null;
+          document.removeEventListener("touchmove", touchMoveHandler);
+        },
+        { once: true }
+      );
+    } else {
       isSticky = false;
-    }
-  });
-
-  document.addEventListener("touchstart", (event) => {
-    if (event.touches.length > 1 && draggedElement) {
-      resetDrag();
-    }
-  });
-
-  const resetDrag = () => {
-    if (draggedElement) {
-      draggedElement.style.top = `${initialPosition.top}px`;
-      draggedElement.style.left = `${initialPosition.left}px`;
       draggedElement.style.backgroundColor = "red";
       draggedElement = null;
-      isSticky = false;
     }
-  };
+  });
+
+  target.addEventListener("dblclick", (event) => {
+    if (!isSticky) {
+      isSticky = true;
+      draggedElement = target;
+      initialPosition = { top: target.offsetTop, left: target.offsetLeft };
+      target.style.backgroundColor = "blue";
+
+      offsetX = event.clientX - target.offsetLeft;
+      offsetY = event.clientY - target.offsetTop;
+
+      const mouseMoveHandler = (moveEvent) => {
+        if (isSticky && draggedElement) {
+          draggedElement.style.top = `${moveEvent.clientY - offsetY}px`;
+          draggedElement.style.left = `${moveEvent.clientX - offsetX}px`;
+        }
+      };
+
+      document.addEventListener("mousemove", mouseMoveHandler);
+    }
+  });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && draggedElement) {
+    draggedElement.style.top = `${initialPosition.top}px`;
+    draggedElement.style.left = `${initialPosition.left}px`;
+    draggedElement.style.backgroundColor = "red";
+    draggedElement = null;
+    isSticky = false;
+  }
+});
